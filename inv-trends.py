@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import sys
-
+import os
 from datetime import date, datetime, timedelta
 
 from glob import glob
@@ -28,13 +28,15 @@ def main():
   folder_loc = "/pixel/project01/cruman/ModelData/inversionv2/"
 
   exps = ['PanArctic_0.5d_CanHisto_NOCTEM_RUN', 'PanArctic_0.5d_CanHisto_NOCTEM_R2', 'PanArctic_0.5d_CanHisto_NOCTEM_R3',
-          'PanArctic_0.5d_CanHisto_NOCTEM_R5', 'PanArctic_0.5d_CanHisto_NOCTEM_R4']
+          'PanArctic_0.5d_CanHisto_NOCTEM_R4', 'PanArctic_0.5d_CanHisto_NOCTEM_R5',  'PanArctic_0.5d_CanRCP45_NOCTEM_R2', 
+          'PanArctic_0.5d_CanRCP45_NOCTEM_R3', 'PanArctic_0.5d_CanRCP45_NOCTEM_R5', 'PanArctic_0.5d_CanRCP45_NOCTEM_R4', 
+          'PanArctic_0.5d_CanRCP45_NOCTEM_RUN']
 
   datai = 1976
   dataf = 2099
 
   #open mask file
-  f_mask = 'mask_arctic.nc'
+  f_mask = 'mask_arctic2.nc'
 
   ds = Dataset(f_mask)
   mask = ds.variables['tas'][:]
@@ -74,31 +76,61 @@ def main():
   '''
   ds.close()  
 
+  # Pandas columns names
+  colnames = ['SimName', 'FREQ', 'DT', 'Year', 'Month', 'Region' ]
+
+  #df = pd.DataFrame(columns=colnames)  
+
   for year in range(datai, dataf+1):
+    print(year)
+
+    if os.path.exists('CSV/TimeSeries_Inv_RCP85_{0}.csv'.format(year)):
+      print("Already calculated")
+      continue
+    rows = []
     for month in range(1, 13):
 
-      for exp in exps:
+    
+      for exp in exps:        
 
         nc_file = "{0}/{1}/InversionV2/Inversion_925_1000_ERA_{2}{3:02d}.nc".format(folder_loc, exp, year, month)
 
+        #print(nc_file)
         ds = Dataset(nc_file)
 
         freq = np.squeeze(ds.variables["FREQ"][:])
         dt = np.squeeze(ds.variables["DT"][:])
 
-        ds.close()
+        
+        ds.close()        
 
-        # looping throught the mask
+        # looping throught the mask        
         for m in range(1, 22):
-                    
-          aux_dt = np.nanmean(dt[mask == m])
-          aux_freq = np.nanmean(freq[mask == m])
-          
-          
-          sys.exit()
+
+          #print(m) 
+          try:          
+            aux_dt = np.nanmean(dt[mask == m])
+            aux_freq = np.nanmean(freq[mask == m])
+          except:
+            # If if falls here, there's no inversion on the area             
+            print(year, month, m, exp)
+            print(nc_file)
+            #print(dt[mask == m])
+            #print(freq[mask == m])
+            aux_dt = 0
+            aux_freq = 0
+
+          rows.append([exp, aux_freq, aux_dt, year, month, m])
+          #print([exp, aux_freq, aux_dt, year, month, m])
+
+
+    df_aux = pd.DataFrame(data=rows, columns=colnames)
+    #frames = [df, df_aux]
+    #df = pd.concat(frames)        
+
         # read stuff and calculate the ensenble, store it on pandas
         # monthly and seasonal
-    
+    df_aux.to_csv('CSV/TimeSeries_Inv_RCP85_{0}.csv'.format(year), encoding='utf-8')
 
 if __name__ == "__main__":
     main()
