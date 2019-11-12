@@ -34,7 +34,7 @@ def main():
           'PanArctic_0.5d_CanRCP45_NOCTEM_R3', 'PanArctic_0.5d_CanRCP45_NOCTEM_R5', 'PanArctic_0.5d_CanRCP45_NOCTEM_R4', 
           'PanArctic_0.5d_CanRCP45_NOCTEM_RUN']
 
-  etickets ["PAN_CAN85_CT", "PAN_CAN85_R2", "PAN_CAN85_R3", "PAN_CAN85_R4", "PAN_CAN85_R5",
+  etickets = ["PAN_CAN85_CT", "PAN_CAN85_R2", "PAN_CAN85_R3", "PAN_CAN85_R4", "PAN_CAN85_R5",
             "PAN_CAN45_R2", "PAN_CAN45_R3", "PAN_CAN45_R4", "PAN_CAN45_R5", "PAN_CAN45_CT"]
 
   datai = 1976
@@ -117,7 +117,7 @@ def main():
         sys.exit()
 
         seaice = np.squeeze(ds.variables["GL"][:])
-        dt = np.squeeze(ds.variables["DT"][:])
+        t2m = np.squeeze(ds.variables["DT"][:])
 
         
         ds.close()        
