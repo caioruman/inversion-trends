@@ -82,7 +82,7 @@ def main():
   ds.close()  
 
   # Pandas columns names
-  colnames = ['SimName', 'SeaIce', '2TM', 'Wind', 'Cloud', 'WaterVapor', 'Year', 'Month', 'Region' ]
+  colnames = ['SimName', 'CloudCover', 'SeaIce', 'ATM_H20', 'T2M', 'T2M_J8', 'Wind', 'Year', 'Month', 'Region' ]
   varnames = ['GL', 'J8', 'UU/VV', 'NF', 'IWVM']
 
   #df = pd.DataFrame(columns=colnames)  
@@ -111,34 +111,51 @@ def main():
         #key = var[dates_tt[0]].keys()[0]
         key = [*var[dates_tt[0]].keys()][0]
         var_3d = np.asarray([var[d][key] for d in dates_tt])
-        cloud_cover = var_3d.copy()*3600
-
-        print(cloud_cover.shape)
-        sys.exit()
+        cloud_cover = np.squeeze(var_3d.copy())*3600        
 
         seaice = np.squeeze(ds.variables["GL"][:])
-        t2m = np.squeeze(ds.variables["DT"][:])
+        water_atm = np.squeeze(ds.variables["IWVM"][:])
 
+        t2m_1 = np.squeeze(ds.variables["J8"][:])
+
+        ds.close()
+
+        ds = RPN(rpn_file_dm)
+
+        var = ds.get_4d_field('TT', label=eticket)
+        dates_tt = list(sorted(var.keys()))
+        #key = var[dates_tt[0]].keys()[0]
+        key = [*var[dates_tt[0]].keys()][0]
+        var_3d = np.asarray([var[d][key] for d in dates_tt])
+        t2m = np.squeeze(var_3d.copy())*3600
+
+        uu = np.squeeze(ds.variables["UU"][:])
+        vv = np.squeeze(ds.variables["VV"][:])
+        uv = np.sqrt(np.power(uu, 2) + np.power(vv, 2))
         
         ds.close()        
 
         # looping throught the mask        
         for m in range(1, 22):
-
+          # variables: cloud_cover, seaice, water_atm, t2m, t2m_1, uv
           #print(m) 
-          try:          
-            aux_dt = np.nanmean(dt[mask == m])
-            aux_freq = np.nanmean(freq[mask == m])
-          except:
+          #try:          
+          aux_cc = np.nanmean(cloud_cover[mask == m])
+          aux_seaice = np.nanmean(seaice[mask == m])
+          aux_water_atm = np.nanmean(water_atm[mask == m])
+          aux_t2m = np.nanmean(t2m[mask == m])
+          aux_t2m_1 = np.nanmean(t2m_1[mask == m])
+          aux_uv = np.nanmean(uv[mask == m])
+          #except:
             # If if falls here, there's no inversion on the area             
-            print(year, month, m, exp)
-            print(nc_file)
+            #print(year, month, m, exp)
+            #print(nc_file)
             #print(dt[mask == m])
             #print(freq[mask == m])
-            aux_dt = 0
-            aux_freq = 0
+            #aux_dt = 0
+            #aux_freq = 0
 
-          rows.append([exp, aux_freq, aux_dt, year, month, m])
+          rows.append([exp, aux_cc, aux_seaice, aux_water_atm, aux_t2m, aux_t2m_1, aux_uv, year, month, m])
           #print([exp, aux_freq, aux_dt, year, month, m])
 
 
@@ -148,7 +165,7 @@ def main():
 
         # read stuff and calculate the ensenble, store it on pandas
         # monthly and seasonal
-    df_aux.to_csv('CSV/TimeSeries_Inv_RCP85_{0}.csv'.format(year), encoding='utf-8')
+    df_aux.to_csv('CSV/TimeSeries_Vars_{0}.csv'.format(year), encoding='utf-8')
 
 if __name__ == "__main__":
     main()
