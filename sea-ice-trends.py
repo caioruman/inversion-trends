@@ -100,6 +100,22 @@ def main():
       for exp, eticket in zip(exps, etickets):
 
         #nc_file = "{0}/{1}/InversionV2/Inversion_925_1000_ERA_{2}{3:02d}.nc".format(folder_loc, exp, year, month)
+        if (exp == 'PanArctic_0.5d_CanRCP45_NOCTEM_RUN' and year < 2006):
+          exp = 'PanArctic_0.5d_CanHisto_NOCTEM_RUN'
+          eticket = "PAN_CAN85_CT"
+        elif (exp == 'PanArctic_0.5d_CanRCP45_NOCTEM_R2' and year < 2006):
+          exp = 'PanArctic_0.5d_CanHisto_NOCTEM_R2'
+          eticket = "PAN_CAN85_R2"
+        elif (exp == 'PanArctic_0.5d_CanRCP45_NOCTEM_R3' and year < 2006):
+          exp = 'PanArctic_0.5d_CanHisto_NOCTEM_R3'
+          eticket = "PAN_CAN85_R3"
+        elif (exp == 'PanArctic_0.5d_CanRCP45_NOCTEM_R4' and year < 2006):
+          exp = 'PanArctic_0.5d_CanHisto_NOCTEM_R4'
+          eticket = "PAN_CAN85_R4"
+        elif (exp == 'PanArctic_0.5d_CanRCP45_NOCTEM_R5' and year < 2006):
+          exp = 'PanArctic_0.5d_CanHisto_NOCTEM_R5'
+          eticket = "PAN_CAN85_R5"
+
         rpn_file = "{0}/{1}/Diagnostics/{1}_{2}{3:02d}/pm{1}_{2}{3:02d}_moyenne".format(folder_loc, exp, year, month)
         rpn_file_dm = "{0}/{1}/Diagnostics/{1}_{2}{3:02d}/dm{1}_{2}{3:02d}_moyenne".format(folder_loc, exp, year, month)
 
