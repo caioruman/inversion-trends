@@ -106,7 +106,7 @@ def main():
         #print(nc_file)
         ds = RPN(rpn_file)
         
-        var = r_pm.get_4d_field('NF', label=eticket)
+        var = ds.get_4d_field('NF', label=eticket)
         dates_tt = list(sorted(var.keys()))
         #key = var[dates_tt[0]].keys()[0]
         key = [*var[dates_tt[0]].keys()][0]
