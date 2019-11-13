@@ -120,21 +120,32 @@ def main():
         rpn_file_dm = "{0}/{1}/Diagnostics/{1}_{2}{3:02d}/dm{1}_{2}{3:02d}_moyenne".format(folder_loc, exp, year, month)
 
         #print(nc_file)
-        ds = RPN(rpn_file)
+        try:
+          ds = RPN(rpn_file)
+
+          var = ds.get_4d_field('NF', label=eticket)
+          dates_tt = list(sorted(var.keys()))
+          #key = var[dates_tt[0]].keys()[0]
+          key = [*var[dates_tt[0]].keys()][0]
+          var_3d = np.asarray([var[d][key] for d in dates_tt])
+          cloud_cover = np.squeeze(var_3d.copy())*3600        
+
+          seaice = np.squeeze(ds.variables["GL"][:])
+          water_atm = np.squeeze(ds.variables["IWVM"][:])
+
+          t2m_1 = np.squeeze(ds.variables["J8"][:])
+
+          ds.close()
+        except:
+          # if the file don't exist, jump to the next record
+          print("File {0} do not exist".format(rpn_file))
+          cloud_cover = np.zeros([172,172])+np.nan
+          seaice = np.zeros([172,172])+np.nan
+          water_atm = np.zeros([172,172])+np.nan
+          t2m_1 = np.zeros([172,172])+np.nan
+          #continue
         
-        var = ds.get_4d_field('NF', label=eticket)
-        dates_tt = list(sorted(var.keys()))
-        #key = var[dates_tt[0]].keys()[0]
-        key = [*var[dates_tt[0]].keys()][0]
-        var_3d = np.asarray([var[d][key] for d in dates_tt])
-        cloud_cover = np.squeeze(var_3d.copy())*3600        
-
-        seaice = np.squeeze(ds.variables["GL"][:])
-        water_atm = np.squeeze(ds.variables["IWVM"][:])
-
-        t2m_1 = np.squeeze(ds.variables["J8"][:])
-
-        ds.close()
+        
 
         ds = RPN(rpn_file_dm)
 
