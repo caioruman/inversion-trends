@@ -112,7 +112,7 @@ def main():
           rpn_file_dm = "{0}/{1}/Diagnostics/{1}_{2}{3:02d}/dm{1}_{2}{3:02d}_moyenne".format(folder_loc, exp1, year, month)
         elif (exp == 'PanArctic_0.5d_CanRCP45_NOCTEM_R3' and year < 2006):
           exp1 = 'PanArctic_0.5d_CanHisto_NOCTEM_R3'
-          eticket = "PAN_CAN85_R3"\          
+          eticket = "PAN_CAN85_R3"        
           rpn_file = "{0}/{1}/Diagnostics/{1}_{2}{3:02d}/pm{1}_{2}{3:02d}_moyenne".format(folder_loc, exp1, year, month)
           rpn_file_dm = "{0}/{1}/Diagnostics/{1}_{2}{3:02d}/dm{1}_{2}{3:02d}_moyenne".format(folder_loc, exp1, year, month)
         elif (exp == 'PanArctic_0.5d_CanRCP45_NOCTEM_R4' and year < 2006):
