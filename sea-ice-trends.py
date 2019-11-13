@@ -35,7 +35,7 @@ def main():
           'PanArctic_0.5d_CanRCP45_NOCTEM_RUN']
 
   etickets = ["PAN_CAN85_CT", "PAN_CAN85_R2", "PAN_CAN85_R3", "PAN_CAN85_R4", "PAN_CAN85_R5",
-            "PAN_CAN45_R2", "PAN_CAN45_R3", "PAN_CAN45_R4", "PAN_CAN45_R5", "PAN_CAN45_CT"]
+            "PAN_CAN45_R2", "PAN_CAN45_R3", "PAN_CAN45_R5", "PAN_CAN45_R4", "PAN_CAN45_CT"]
 
   datai = 1976
   dataf = 2099
