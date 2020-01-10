@@ -75,11 +75,11 @@ def main():
 
   
   for reg in range(0,21):
-    dt_85 = master_list_dt[reg, 0, :]
-    dt_85_std = master_list_dt[reg, 1, :]
+    #dt_85 = master_list_dt[reg, 0, :]
+    #dt_85_std = master_list_dt[reg, 1, :]
 
-    dt_45 = master_list_dt[reg, 2, :]
-    dt_45_std = master_list_dt[reg, 3, :]    
+    #dt_45 = master_list_dt[reg, 2, :]
+    #dt_45_std = master_list_dt[reg, 3, :]    
 
   # Winter[region, value, year, period], Summer
     plot_trends(master_list_dt[reg, :, :, 0], master_list_dt[reg, :, :, 1], years, 'dt_{0}'.format(reg+1), 'Inversion Strength (K)', reg)
@@ -177,7 +177,7 @@ def return_regname(reg):
   elif (reg == 8):
     name = 'Barents Sea'
   elif (reg == 9):
-    name = 'North Atlantic'
+    name = 'Greenland/Norwengian Seas'
   elif (reg == 10):
     name = 'Baffin Bay'
   elif (reg == 11):
