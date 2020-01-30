@@ -36,7 +36,7 @@ def main():
   dataf = 2099
 
   #open mask file
-  f_mask = 'mask_arctic2.nc'
+  f_mask = 'mask_arctic3.nc'
 
   ds = Dataset(f_mask)
   mask = ds.variables['tas'][:]
@@ -73,6 +73,7 @@ def main():
    19: Baffin Island
    20: Nunavut (Continental part)
    21: Kara Sea   
+   22: North of Laptev Sea
   '''
   ds.close()  
 
@@ -105,7 +106,7 @@ def main():
         ds.close()        
 
         # looping throught the mask        
-        for m in range(1, 22):
+        for m in range(1, 23):
 
           #print(m) 
           try:          

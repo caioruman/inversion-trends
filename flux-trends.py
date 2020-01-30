@@ -37,11 +37,11 @@ def main():
   etickets = ["PAN_CAN85_CT", "PAN_CAN85_R2", "PAN_CAN85_R3", "PAN_CAN85_R4", "PAN_CAN85_R5",
             "PAN_CAN45_R2", "PAN_CAN45_R3", "PAN_CAN45_R5", "PAN_CAN45_R4", "PAN_CAN45_CT"]
 
-  datai = 2098
+  datai = 1979
   dataf = 2099
 
   #open mask file
-  f_mask = 'mask_arctic2.nc'
+  f_mask = 'mask_arctic3.nc'
 
   ds = Dataset(f_mask)
   mask = ds.variables['tas'][:]
@@ -78,6 +78,7 @@ def main():
    19: Baffin Island
    20: Nunavut (Continental part)
    21: Kara Sea   
+   22: North of Laptev Sea
   '''
   ds.close()  
 
@@ -187,7 +188,7 @@ def main():
         #ds.close()        
 
         # looping throught the mask        
-        for m in range(1, 22):
+        for m in range(1, 23):
           # variables: cloud_cover, seaice, water_atm, t2m, t2m_1, uv
           #print(m) 
           aux_lw_down = np.nanmean(lw_down[mask == m])
