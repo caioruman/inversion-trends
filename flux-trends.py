@@ -42,11 +42,18 @@ def main():
 
   #open mask file
   f_mask = 'mask_arctic3.nc'
+  sea_mask = 'MG.fst'
 
   ds = Dataset(f_mask)
   mask = ds.variables['tas'][:]
   lon = ds.variables['lon'][:]
   lat = ds.variables['lat'][:]
+
+  # sea mask with values between 0 and 1
+  r = RPN(sea_mask)
+  mg = np.squeeze(r.variables['MG'][:])
+  mg = mg[20:-20,20:-20]
+
 
   # due to a conversion error from rpn to nc, I need to subtract 273.15
   mask = mask - 273.15
@@ -80,6 +87,8 @@ def main():
    21: Kara Sea   
    22: North of Laptev Sea
   '''
+  # 1 = land; 0 = sea
+  reg_sea_land = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0]
   ds.close()  
 
   # Pandas columns names
@@ -190,11 +199,31 @@ def main():
         # looping throught the mask        
         for m in range(1, 23):
           # variables: cloud_cover, seaice, water_atm, t2m, t2m_1, uv
-          #print(m) 
-          aux_lw_down = np.nanmean(lw_down[mask == m])
-          aux_SH = np.nanmean(SH[mask == m])
-          aux_LH = np.nanmean(LH[mask == m])
-          aux_lw_net = np.nanmean(lw_net[mask == m])
+          #print(m)
+          # step 1
+          aux_lwd = lw_down.copy()
+          aux_sh = SH.copy()
+          aux_lh = LH.copy()
+          aux_lwn = lw_net.copy()
+
+          # applying the sea ice mask over the region mask
+          # regions with less than 75% land are considered water.
+          if reg_sea_land[m-1] == 0: # sea
+            aux_lwd[mg > 0.75] = np.nan
+            aux_sh[mg > 0.75] = np.nan
+            aux_lh[mg > 0.75] = np.nan
+            aux_lwn[mg > 0.75] = np.nan
+
+          else: # land
+            aux_lwd[mg <= 0.75] = np.nan
+            aux_sh[mg <= 0.75] = np.nan
+            aux_lh[mg <= 0.75] = np.nan
+            aux_lwn[mg <= 0.75] = np.nan
+
+          aux_lw_down = np.nanmean(aux_lwd[mask == m])
+          aux_SH = np.nanmean(aux_sh[mask == m])
+          aux_LH = np.nanmean(aux_lh[mask == m])
+          aux_lw_net = np.nanmean(aux_lwn[mask == m])
 
 #          rows.append([exp, aux_cc, aux_seaice, aux_water_atm, aux_t2m, aux_t2m_1, aux_uv, year, month, m])
           rows.append([exp, aux_lw_down, aux_SH, aux_LH, aux_lw_net, year, month, m])

@@ -37,6 +37,7 @@ def main():
 
   #open mask file
   f_mask = 'mask_arctic3.nc'
+  sea_mask = 'MG.fst'  
 
   ds = Dataset(f_mask)
   mask = ds.variables['tas'][:]
@@ -49,6 +50,11 @@ def main():
   mask[lat < 60] = np.nan
   # And where mask == 0, not interested either
   mask[mask==0] = np.nan
+
+  # sea mask with values between 0 and 1
+  r = RPN(sea_mask)
+  mg = np.squeeze(r.variables['MG'][:])
+  mg = mg[20:-20,20:-20]
 
   '''
   Regions adapted from Wang and Key (2005): Arctic Surface, Cloud, and Radiation Properties Based on the AVHRR Polar Pathfinder Dataset. Part II: Recent Trends
@@ -75,6 +81,8 @@ def main():
    21: Kara Sea   
    22: North of Laptev Sea
   '''
+  # 1 = land; 0 = sea
+  reg_sea_land = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0]
   ds.close()  
 
   # Pandas columns names
@@ -110,8 +118,21 @@ def main():
 
           #print(m) 
           try:          
-            aux_dt = np.nanmean(dt[mask == m])
-            aux_freq = np.nanmean(freq[mask == m])
+            aux_dt1 = dt.copy()
+            aux_freq1 = freq.copy()
+
+            # applying the sea ice mask over the region mask
+            # regions with less than 75% land are considered water.
+            if reg_sea_land[m-1] == 0: # sea
+              aux_dt1[mg > 0.75] == 0 
+              aux_freq1[mg > 0.75] == 0
+            else:
+              aux_dt1[mg <= 0.75] == 0
+              aux_freq1[mg <= 0.75] == 0
+
+
+            aux_dt = np.nanmean(aux_dt1[mask == m])
+            aux_freq = np.nanmean(aux_freq1[mask == m])
           except:
             # If if falls here, there's no inversion on the area             
             print(year, month, m, exp)
